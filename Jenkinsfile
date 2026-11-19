@@ -1,22 +1,36 @@
 pipeline {
     agent any
 
+    environment {
+        APP_NAME = 'greeter'
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Build') {
             steps {
-                checkout scm
+                echo "Building ${APP_NAME}, build number ${BUILD_NUMBER}"
+                sh 'mkdir -p dist'
+                sh 'tar -czf dist/${APP_NAME}-${BUILD_NUMBER}.tar.gz app'
             }
         }
-        stage('Hello') {
+        stage('Test') {
             steps {
-                echo 'Hello from a Jenkinsfile in GitHub!'
+                sh 'bash tests/test_greet.sh'
             }
         }
-        stage('Files') {
+        stage('Archive') {
             steps {
-                sh 'ls -la'
-                sh 'cat README.md'
+                archiveArtifacts artifacts: 'dist/*.tar.gz', fingerprint: true
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build and tests passed!'
+        }
+        failure {
+            echo 'Something failed, check the console output.'
         }
     }
 }
