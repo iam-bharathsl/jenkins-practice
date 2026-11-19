@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+
     parameters {
         string(name: 'GREET_NAME', defaultValue: 'Jenkins', description: 'Who should we greet?')
         booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run the test stage?')
