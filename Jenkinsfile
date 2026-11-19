@@ -32,11 +32,14 @@ pipeline {
             }
         }
         stage('Run') {
+            environment {
+                GREET_NAME = "${params.GREET_NAME}"
+            }
             steps {
                 echo "Target environment: ${params.ENVIRONMENT}"
                 sh 'bash app/greet.sh "$GREET_NAME"'
             }
-        
+        }
         stage('Secrets demo') {
             environment {
                 API_TOKEN = credentials('demo-api-token')
@@ -45,8 +48,6 @@ pipeline {
                 sh 'echo "Token value is: $API_TOKEN"'
                 sh 'echo "Token length is: ${#API_TOKEN}"'
             }
-        }
-
         }
         stage('Archive') {
             steps {
